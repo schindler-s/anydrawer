@@ -110,51 +110,45 @@ OverlayEntry _buildOverlayEntry({
     return false;
   }
 
-  // close drawer method
-  void closeDrawer() {
-    if (animationController.isAnimating) return;
-
-    animationController.reverse().whenCompleteOrCancel(() {
-      if (drawerOverlayEntry.mounted) {
-        drawerOverlayEntry
-          ..remove()
-          ..dispose();
-        if (controller == null) {
-          internalController.dispose();
-        }
+  void whenCompleteOrCancel() {
+    if (drawerOverlayEntry.mounted) {
+      drawerOverlayEntry
+        ..remove()
+        ..dispose();
+      if (controller == null) {
+        internalController.dispose();
       }
-      if (config.closeOnEscapeKey) {
-        HardwareKeyboard.instance.removeHandler(handler);
-      }
-      onClose.call();
-    });
+    }
+    if (config.closeOnEscapeKey) {
+      HardwareKeyboard.instance.removeHandler(handler);
+    }
+    onClose.call();
   }
 
-  internalController.addListener(() {
+  // close drawer method
+  void closeDrawer() {
     if (internalController.value) return;
+    if (animationController.isAnimating) return;
 
-    closeDrawer();
-  });
+    animationController.reverse().whenCompleteOrCancel(whenCompleteOrCancel);
+  }
+
+  internalController.addListener(closeDrawer);
 
   // Create the overlay entry
   return drawerOverlayEntry = OverlayEntry(
     builder: (overlayContext) => _Drawer(
       context: context,
       builder: builder,
-      onClose: onClose,
+      onClose: () {
+        internalController.removeListener(closeDrawer);
+      },
       config: config,
       onOpen: onOpen,
       controller: internalController,
       handler: handler,
       animationController: animationController,
-      whenCompleteOrCancel: () {
-        if (drawerOverlayEntry.mounted) {
-          drawerOverlayEntry
-            ..remove()
-            ..dispose();
-        }
-        onClose.call();
-      },
+      whenCompleteOrCancel: whenCompleteOrCancel,
     ),
   );
 }
@@ -209,6 +203,12 @@ class __DrawerState extends State<_Drawer> {
   AnimationController get animationController => widget.animationController;
 
   @override
+  void dispose() {
+    onClose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Get the size of the screen
     final size = MediaQuery.sizeOf(context);
@@ -227,8 +227,11 @@ class __DrawerState extends State<_Drawer> {
     final backdrop = GestureDetector(
       onTap: () =>
           config.closeOnClickOutside ? internalController.close() : null,
-      child: Container(
-        color: Colors.black.withOpacity(config.backdropOpacity),
+      child: FadeTransition(
+        opacity: animationController,
+        child: Container(
+          color: Colors.black.withOpacity(config.backdropOpacity),
+        ),
       ),
     );
 
