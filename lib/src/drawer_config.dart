@@ -30,6 +30,8 @@ import 'package:anydrawer/src/drawer_side.dart';
 class DrawerConfig {
   /// Constructs a new [DrawerConfig].
   const DrawerConfig({
+    this.maxDrawerExtent,
+    this.minBackdropExtent = 30,
     this.widthPercentage,
     this.closeOnClickOutside = true,
     this.backdropOpacity = 0.4,
@@ -95,6 +97,12 @@ class DrawerConfig {
   /// Close on back button
   final bool closeOnBackButton;
 
+  /// Maxiumum extent of the drawer
+  final double? maxDrawerExtent;
+
+  /// Minimum extent of content that should be visible behind the drawer
+  final double minBackdropExtent;
+
   /// copyWith method
   DrawerConfig copyWith({
     double? widthPercentage,
@@ -106,6 +114,8 @@ class DrawerConfig {
     bool? closeOnEscapeKey,
     Duration? animationDuration,
     double? borderRadius,
+    double? maxDrawerExtent,
+    double? minBackdropExtent,
   }) {
     return DrawerConfig(
       widthPercentage: widthPercentage ?? this.widthPercentage,
@@ -117,6 +127,8 @@ class DrawerConfig {
       closeOnEscapeKey: closeOnEscapeKey ?? this.closeOnEscapeKey,
       animationDuration: animationDuration ?? this.animationDuration,
       borderRadius: borderRadius ?? this.borderRadius,
+      minBackdropExtent: minBackdropExtent ?? this.minBackdropExtent,
+      maxDrawerExtent: maxDrawerExtent ?? this.maxDrawerExtent,
     );
   }
 
