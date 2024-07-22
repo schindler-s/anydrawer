@@ -137,7 +137,7 @@ OverlayEntry _buildOverlayEntry({
 
   // Create the overlay entry
   return drawerOverlayEntry = OverlayEntry(
-    builder: (overlayContext) => _Drawer(
+    builder: (overlayContext) => _AnyDrawer(
       context: context,
       builder: builder,
       onClose: () {
@@ -153,10 +153,9 @@ OverlayEntry _buildOverlayEntry({
   );
 }
 
-/// Private function to get the default width percentage.
+/// Private function to get the default width.
 /// The [size] is the size of the screen.
-/// Returns the default width percentage.
-
+/// Returns the default width.
 double _getDefaultMaxWidth(Size size) {
   if (size.width < 360) {
     return 260;
@@ -167,8 +166,8 @@ double _getDefaultMaxWidth(Size size) {
   }
 }
 
-class _Drawer extends StatefulWidget {
-  const _Drawer({
+class _AnyDrawer extends StatefulWidget {
+  const _AnyDrawer({
     required this.context,
     required this.builder,
     required this.onClose,
@@ -191,10 +190,10 @@ class _Drawer extends StatefulWidget {
   final VoidCallback whenCompleteOrCancel;
 
   @override
-  State<_Drawer> createState() => __DrawerState();
+  State<_AnyDrawer> createState() => _AnyDrawerState();
 }
 
-class __DrawerState extends State<_Drawer> {
+class _AnyDrawerState extends State<_AnyDrawer> {
   DrawerBuilder get builder => widget.builder;
   void Function() get onClose => widget.onClose;
   DrawerConfig get config => widget.config;

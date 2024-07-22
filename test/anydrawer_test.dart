@@ -291,8 +291,8 @@ when closeOnClickOutside is false''', (
                         child: Text('Test Drawer'),
                       );
                     },
-                    config: const DrawerConfig(
-                      widthPercentage: 0.5,
+                    config: DrawerConfig(
+                      widthBySize: (size) => 0.5 * size.width,
                     ),
                   );
                 },

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:anydrawer/src/drawer_side.dart';
 
 /// Configuration for the drawer.
@@ -32,7 +34,7 @@ class DrawerConfig {
   const DrawerConfig({
     this.maxDrawerExtent,
     this.minBackdropExtent = 30,
-    this.widthPercentage,
+    this.widthBySize,
     this.closeOnClickOutside = true,
     this.backdropOpacity = 0.4,
     this.dragEnabled = false,
@@ -44,11 +46,6 @@ class DrawerConfig {
     this.closeOnBackButton = false,
     this.animationDuration = const Duration(milliseconds: 300),
   })  : assert(
-          widthPercentage == null ||
-              (widthPercentage >= 0.1 && widthPercentage <= 0.99),
-          'widthPercentage must be between 0.1 and 0.99',
-        ),
-        assert(
           backdropOpacity >= 0 && backdropOpacity <= 1,
           'backdropOpacity must be between 0 and 1',
         ),
@@ -61,10 +58,14 @@ class DrawerConfig {
           'both closeOnClickOutside and closeOnEscapeKey cannot be false',
         );
 
-  /// The width percentage of the drawer.
+  /// The width of the drawer.
   /// It is used to calculate the width of the drawer based on the width of the
   /// screen.
-  final double? widthPercentage;
+  /// Defaults to:
+  /// - [260] on width < 360
+  /// - [300] on width < 600
+  /// - [400] on any width above
+  final double Function(Size size)? widthBySize;
 
   /// Whether the drawer should be closed when the user clicks outside the
   /// drawer.
@@ -105,7 +106,7 @@ class DrawerConfig {
 
   /// copyWith method
   DrawerConfig copyWith({
-    double? widthPercentage,
+    double Function(Size size)? widthBySize,
     bool? closeOnClickOutside,
     double? backdropOpacity,
     bool? enableEdgeDrag,
@@ -118,7 +119,7 @@ class DrawerConfig {
     double? minBackdropExtent,
   }) {
     return DrawerConfig(
-      widthPercentage: widthPercentage ?? this.widthPercentage,
+      widthBySize: widthBySize ?? this.widthBySize,
       closeOnClickOutside: closeOnClickOutside ?? this.closeOnClickOutside,
       backdropOpacity: backdropOpacity ?? this.backdropOpacity,
       dragEnabled: enableEdgeDrag ?? dragEnabled,
@@ -135,7 +136,7 @@ class DrawerConfig {
   @override
   String toString() {
     return '''
-      DrawerConfig(widthPercentage: $widthPercentage,
+      DrawerConfig(widthBySize: $widthBySize,
         closeOnClickOutside: $closeOnClickOutside, 
         backdropOpacity: $backdropOpacity,
         enableEdgeDrag: $dragEnabled, maxDragExtent: $maxDragExtent)
